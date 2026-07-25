@@ -6,9 +6,19 @@ import { useEffect, useMemo, useState } from "react";
 import { getCatalogGame } from "@/games/registry";
 import type { SeatPlayer } from "@/games/types";
 import { BingoView } from "@/components/games/BingoView";
+import { CharadesView } from "@/components/games/CharadesView";
 import { ColorClashView } from "@/components/games/ColorClashView";
+import { ConnectFourView } from "@/components/games/ConnectFourView";
+import { CrazyEightsView } from "@/components/games/CrazyEightsView";
+import { GoFishView } from "@/components/games/GoFishView";
+import { LicensePlateView } from "@/components/games/LicensePlateView";
+import { MemoryView } from "@/components/games/MemoryView";
+import { RpsView } from "@/components/games/RpsView";
 import { SolitaireView } from "@/components/games/SolitaireView";
 import { TicTacToeView } from "@/components/games/TicTacToeView";
+import { TriviaView } from "@/components/games/TriviaView";
+import { TwentyQuestionsView } from "@/components/games/TwentyQuestionsView";
+import { WarView } from "@/components/games/WarView";
 import { WouldYouRatherView } from "@/components/games/WouldYouRatherView";
 import { useApp } from "@/components/providers";
 import { Button, Card, EmptyState, Shell, TopNav } from "@/components/ui";
@@ -197,7 +207,7 @@ export default function PlayPage() {
           )}
           {gameId === "color-clash" && (
             <ColorClashView
-              players={mode === "solo" ? seats : seats}
+              players={seats}
               mode={mode === "solo" ? "solo" : "same_device"}
               onEnd={(won) => {
                 if (won === true) grantXp(40, true);
@@ -207,14 +217,100 @@ export default function PlayPage() {
           )}
           {gameId === "road-trip-bingo" && (
             <BingoView
-              players={mode === "solo" ? seats : seats}
+              players={seats}
               onEnd={(won) => grantXp(won ? 35 : 15, won)}
             />
           )}
           {gameId === "would-you-rather" && (
-            <WouldYouRatherView
+            <WouldYouRatherView players={seats} onEnd={() => grantXp(20)} />
+          )}
+          {gameId === "war" && (
+            <WarView
+              players={seats}
+              mode={mode}
+              onEnd={(won) => {
+                if (won === true) grantXp(25, true);
+                else if (won === false) grantXp(10, false);
+              }}
+            />
+          )}
+          {gameId === "go-fish" && (
+            <GoFishView
               players={mode === "solo" ? seats : seats}
-              onEnd={() => grantXp(20)}
+              mode={mode}
+              onEnd={(won) => {
+                if (won === true) grantXp(35, true);
+                else if (won === false) grantXp(12, false);
+              }}
+            />
+          )}
+          {gameId === "memory" && (
+            <MemoryView
+              players={mode === "solo" ? seats : seats}
+              onEnd={(won) => {
+                if (won === true) grantXp(30, true);
+                else if (won === false) grantXp(12, false);
+                else grantXp(15);
+              }}
+            />
+          )}
+          {gameId === "crazy-eights" && (
+            <CrazyEightsView
+              players={seats}
+              mode={mode}
+              onEnd={(won) => {
+                if (won === true) grantXp(35, true);
+                else if (won === false) grantXp(12, false);
+              }}
+            />
+          )}
+          {gameId === "connect-four" && (
+            <ConnectFourView
+              players={seats}
+              mode={mode}
+              onEnd={(won) => {
+                if (won === true) grantXp(35, true);
+                else if (won === false) grantXp(12, false);
+                else grantXp(15);
+              }}
+            />
+          )}
+          {gameId === "rock-paper-scissors" && (
+            <RpsView
+              players={seats}
+              mode={mode}
+              onEnd={(won) => {
+                if (won === true) grantXp(20, true);
+                else if (won === false) grantXp(8, false);
+              }}
+            />
+          )}
+          {gameId === "trivia" && (
+            <TriviaView
+              players={mode === "solo" ? seats : seats}
+              onEnd={(won) => {
+                if (won === true) grantXp(30, true);
+                else if (won === false) grantXp(12, false);
+                else grantXp(15);
+              }}
+            />
+          )}
+          {gameId === "charades" && (
+            <CharadesView players={seats} onEnd={() => grantXp(25)} />
+          )}
+          {gameId === "twenty-questions" && (
+            <TwentyQuestionsView
+              players={seats}
+              onEnd={(won) => {
+                if (won === true) grantXp(30, true);
+                else if (won === false) grantXp(12, false);
+              }}
+            />
+          )}
+          {gameId === "license-plate-hunt" && (
+            <LicensePlateView
+              players={mode === "solo" ? seats : seats}
+              onEnd={(won) => grantXp(won ? 40 : 15, won)}
             />
           )}
         </div>

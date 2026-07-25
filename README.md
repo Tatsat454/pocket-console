@@ -6,7 +6,7 @@ Play solo, pass-and-play on one device, create a private room for friends on the
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for system design, the game-module interface, Socket.IO events, and milestones.
 
-## MVP games
+## Games (15)
 
 | Game | Modes |
 |------|--------|
@@ -15,8 +15,16 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for system design, the game-module inte
 | Tic-Tac-Toe | Solo vs CPU, same-device, online rooms |
 | Road-Trip Bingo | Solo / same-device / rooms |
 | Would You Rather | Solo / same-device / rooms |
-
-The full catalog lists 15 games; the rest appear as “Coming soon”.
+| War | Solo vs CPU, same-device, rooms |
+| Go Fish | Solo vs CPU, same-device, rooms |
+| Memory Match | Solo / same-device / rooms |
+| Crazy Eights | Solo vs CPU, same-device, rooms |
+| Connect Four | Solo vs CPU, same-device, rooms |
+| Rock Paper Scissors | Solo vs CPU, same-device, rooms |
+| Trivia | Solo / same-device / rooms |
+| Charades | Same-device / rooms |
+| Twenty Questions | Same-device / rooms |
+| License Plate Hunt | Solo / same-device / rooms |
 
 ## Quick start
 

@@ -30,6 +30,24 @@ export function OnlineGameView({
   if (room.gameId === "road-trip-bingo") {
     return <OnlineBingo room={room} playerId={playerId} onAction={onAction} />;
   }
+  if (room.gameId === "connect-four") {
+    return <OnlineConnectFour room={room} playerId={playerId} onAction={onAction} />;
+  }
+  if (room.gameId === "rock-paper-scissors") {
+    return <OnlineRps room={room} playerId={playerId} onAction={onAction} />;
+  }
+  if (room.gameId === "war") {
+    return <OnlineWar room={room} playerId={playerId} onAction={onAction} />;
+  }
+  if (room.gameId === "memory") {
+    return <OnlineMemory room={room} playerId={playerId} onAction={onAction} />;
+  }
+  if (room.gameId === "trivia") {
+    return <OnlineTrivia room={room} playerId={playerId} onAction={onAction} />;
+  }
+  if (room.gameId === "license-plate-hunt") {
+    return <OnlinePlates room={room} playerId={playerId} onAction={onAction} />;
+  }
   return (
     <Card>
       <p>This game&apos;s online view is not wired yet. Try same-device mode.</p>
@@ -282,6 +300,263 @@ function OnlineBingo({
             onClick={() => !cell.free && onAction({ type: "toggle", cellId: cell.id })}
           >
             {cell.label}
+          </button>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function OnlineConnectFour({
+  room,
+  playerId,
+  onAction,
+}: {
+  room: RoomStatePayload;
+  playerId: string | null;
+  onAction: (action: unknown) => void;
+}) {
+  const view = room.gameView as {
+    board: Array<Array<"R" | "Y" | null>>;
+    currentPlayerId: string;
+    winnerId: string | null;
+    isDraw: boolean;
+  } | null;
+  if (!view) return <Card>Waiting…</Card>;
+  const myTurn = view.currentPlayerId === playerId;
+  return (
+    <Card>
+      <p className="font-display mb-3 text-2xl">Connect Four</p>
+      <p className="mb-3 text-sm text-[var(--muted)]">
+        {view.winnerId || view.isDraw
+          ? view.isDraw
+            ? "Draw"
+            : "Game over"
+          : myTurn
+            ? "Your turn"
+            : "Waiting…"}
+      </p>
+      <div className="mx-auto grid max-w-md grid-cols-7 gap-1.5 rounded-3xl bg-blue-700 p-3">
+        {view.board.flatMap((row, r) =>
+          row.map((cell, c) => (
+            <button
+              key={`${r}-${c}`}
+              type="button"
+              className="aspect-square rounded-full bg-blue-950/40"
+              disabled={!myTurn || !!view.winnerId || view.isDraw}
+              onClick={() => onAction({ type: "drop", column: c })}
+            >
+              <span
+                className={`block h-full w-full rounded-full ${
+                  cell === "R"
+                    ? "bg-rose-500"
+                    : cell === "Y"
+                      ? "bg-amber-300"
+                      : "bg-sky-100/90"
+                }`}
+              />
+            </button>
+          )),
+        )}
+      </div>
+      {(view.winnerId || view.isDraw) && (
+        <Button className="mt-4" onClick={() => onAction({ type: "reset" })}>
+          Rematch
+        </Button>
+      )}
+    </Card>
+  );
+}
+
+function OnlineRps({
+  room,
+  playerId,
+  onAction,
+}: {
+  room: RoomStatePayload;
+  playerId: string | null;
+  onAction: (action: unknown) => void;
+}) {
+  const view = room.gameView as {
+    scores: Record<string, number>;
+    choices: Record<string, string | null>;
+    winnerId: string | null;
+    targetWins: number;
+  } | null;
+  if (!view || !playerId) return <Card>Waiting…</Card>;
+  const chosen = !!view.choices[playerId] && view.choices[playerId] !== "hidden";
+  return (
+    <Card>
+      <p className="font-display text-2xl">Rock Paper Scissors</p>
+      <p className="mb-3 text-sm text-[var(--muted)]">First to {view.targetWins}</p>
+      <div className="grid grid-cols-3 gap-2">
+        {(["rock", "paper", "scissors"] as const).map((c) => (
+          <Button
+            key={c}
+            disabled={chosen || !!view.winnerId}
+            onClick={() => onAction({ type: "choose", choice: c })}
+          >
+            {c}
+          </Button>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function OnlineWar({
+  room,
+  onAction,
+}: {
+  room: RoomStatePayload;
+  playerId: string | null;
+  onAction: (action: unknown) => void;
+}) {
+  const view = room.gameView as {
+    piles: Record<string, number>;
+    winnerId: string | null;
+    players: [string, string];
+  } | null;
+  if (!view) return <Card>Dealing…</Card>;
+  return (
+    <Card>
+      <p className="font-display mb-3 text-2xl">War</p>
+      <p className="mb-3 text-sm text-[var(--muted)]">
+        {view.players.map((id) => `${id.slice(0, 4)}…:${view.piles[id]}`).join(" · ")}
+      </p>
+      <Button disabled={!!view.winnerId} onClick={() => onAction({ type: "flip" })}>
+        Flip
+      </Button>
+    </Card>
+  );
+}
+
+function OnlineMemory({
+  room,
+  playerId,
+  onAction,
+}: {
+  room: RoomStatePayload;
+  playerId: string | null;
+  onAction: (action: unknown) => void;
+}) {
+  const view = room.gameView as {
+    tiles: Array<{ id: string; emoji: string; faceUp: boolean; matched: boolean }>;
+    currentPlayerId: string;
+    scores: Record<string, number>;
+    finished: boolean;
+    flipped: string[];
+  } | null;
+  if (!view) return <Card>Shuffling…</Card>;
+  const myTurn = view.currentPlayerId === playerId;
+  return (
+    <Card>
+      <p className="font-display mb-3 text-2xl">Memory Match</p>
+      <div className="grid grid-cols-4 gap-2">
+        {view.tiles.map((tile) => (
+          <button
+            key={tile.id}
+            type="button"
+            disabled={!myTurn || tile.matched || tile.faceUp || view.finished}
+            className="aspect-square rounded-2xl bg-black/10 text-2xl dark:bg-white/15"
+            onClick={() => {
+              onAction({ type: "flip", tileId: tile.id });
+              // resolve is client-timed in local mode; online clients send resolve when 2 flipped
+            }}
+          >
+            {tile.faceUp || tile.matched ? tile.emoji : ""}
+          </button>
+        ))}
+      </div>
+      {view.flipped.length === 2 && myTurn && (
+        <Button className="mt-3" onClick={() => onAction({ type: "resolve" })}>
+          Continue
+        </Button>
+      )}
+    </Card>
+  );
+}
+
+function OnlineTrivia({
+  room,
+  playerId,
+  onAction,
+}: {
+  room: RoomStatePayload;
+  playerId: string | null;
+  onAction: (action: unknown) => void;
+}) {
+  const view = room.gameView as {
+    prompt: string;
+    choices: string[];
+    yourAnswer?: number;
+    finished: boolean;
+    index: number;
+    total: number;
+  } | null;
+  if (!view?.prompt) return <Card>Loading…</Card>;
+  return (
+    <Card>
+      <p className="font-display text-2xl">Trivia</p>
+      <p className="mb-2 text-sm text-[var(--muted)]">
+        {view.index + 1}/{view.total}
+      </p>
+      <p className="mb-3 font-display text-xl">{view.prompt}</p>
+      <div className="grid gap-2">
+        {view.choices.map((c, i) => (
+          <Button
+            key={i}
+            disabled={view.yourAnswer !== undefined || view.finished}
+            onClick={() => onAction({ type: "answer", choice: i })}
+          >
+            {c}
+          </Button>
+        ))}
+      </div>
+      <Button className="mt-3" variant="ghost" onClick={() => onAction({ type: "next" })}>
+        Next
+      </Button>
+    </Card>
+  );
+}
+
+function OnlinePlates({
+  room,
+  playerId,
+  onAction,
+}: {
+  room: RoomStatePayload;
+  playerId: string | null;
+  onAction: (action: unknown) => void;
+}) {
+  const view = room.gameView as {
+    items: Array<{ id: string; label: string; marked: boolean }>;
+    yourCount: number;
+    target: number;
+    finished: boolean;
+  } | null;
+  if (!view) return <Card>Loading checklist…</Card>;
+  return (
+    <Card>
+      <p className="font-display text-2xl">License Plate Hunt</p>
+      <p className="mb-3 text-sm text-[var(--muted)]">
+        {view.yourCount}/{view.target}
+        {playerId ? "" : ""}
+      </p>
+      <div className="grid max-h-96 grid-cols-2 gap-2 overflow-y-auto">
+        {view.items.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            disabled={view.finished}
+            className={`rounded-2xl px-3 py-2 text-left text-sm font-bold ${
+              item.marked
+                ? "bg-[var(--secondary)] text-[var(--secondary-ink)]"
+                : "bg-black/5 dark:bg-white/10"
+            }`}
+            onClick={() => onAction({ type: "toggle", itemId: item.id })}
+          >
+            {item.label}
           </button>
         ))}
       </div>
