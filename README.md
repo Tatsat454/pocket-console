@@ -31,6 +31,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for system design, the game-module inte
 ```bash
 cd pocket-console
 cp .env.example .env
+docker compose up -d          # local Postgres
 npm install
 npm run icons
 npm run db:push
@@ -48,25 +49,38 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run host` | Same as dev, prints LAN join banner |
 | `npm run dev:next` | Next only (no Socket.IO host) |
 | `npm run build` / `npm start` | Production build + host |
+| `npm run start:prod` | Railway / production: sync DB then start |
 | `npm test` | Vitest game-engine tests |
-| `npm run db:push` | Sync Prisma schema (SQLite) |
+| `npm run db:push` | Sync Prisma schema (Postgres) |
 | `npm run db:seed` | Seed badges & cosmetics |
+
+## Deploy on Railway
+
+This app needs a **persistent Node process** (custom server + Socket.IO), which Railway supports.
+
+1. Go to [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub** → select `Tatsat454/pocket-console`.
+2. Add a database: **+ New** → **Database** → **PostgreSQL**.
+3. On the web service, open **Variables** and ensure `DATABASE_URL` is linked from Postgres (Railway usually adds this automatically when you connect the DB). Also set:
+   - `NODE_ENV=production`
+4. In **Settings** → **Networking** → **Generate Domain**.
+5. Deploy. Health check is `/health` (configured in `railway.toml`).
+6. Optional once after first deploy: open the service shell / CLI and run `npm run db:seed`.
+
+Leave `NEXT_PUBLIC_SOCKET_URL` empty so the browser uses the same Railway origin for Socket.IO.
+
+Local LAN hosting (`npm run host`) still works the same way — Railway is for internet play.
 
 ## Environment variables
 
 Copy `.env.example` to `.env`:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://pocket:pocket@localhost:5432/pocket_console?schema=public"
 PORT=3000
 # NEXT_PUBLIC_SOCKET_URL=   # leave empty to use same origin
 ```
 
-For production Postgres:
-
-```env
-DATABASE_URL="postgresql://user:pass@host:5432/pocket_console?schema=public"
-```
+On Railway, `DATABASE_URL` comes from the Postgres plugin.
 
 ## Local-network testing
 

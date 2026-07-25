@@ -3,6 +3,7 @@
  * Serves Next.js and Socket.IO on one port so local-network friends
  * only need a single URL (http://<lan-ip>:<port>).
  */
+import "dotenv/config";
 import { createServer } from "http";
 import { parse } from "url";
 import next from "next";
@@ -23,7 +24,16 @@ async function main() {
 
   const httpServer = createServer((req, res) => {
     const parsedUrl = parse(req.url!, true);
-    // Tiny health endpoint for LAN checks
+
+    // Railway / load-balancer health check
+    if (parsedUrl.pathname === "/health") {
+      res.setHeader("Content-Type", "application/json");
+      res.statusCode = 200;
+      res.end(JSON.stringify({ status: "ok" }));
+      return;
+    }
+
+    // Tiny host-info endpoint for LAN discovery
     if (parsedUrl.pathname === "/api/host-info") {
       res.setHeader("Content-Type", "application/json");
       res.end(
@@ -45,6 +55,8 @@ async function main() {
       origin: true,
       methods: ["GET", "POST"],
     },
+    // polling-first is more reliable behind Railway's proxy, then upgrades
+    transports: ["polling", "websocket"],
     // Helpful on flaky mobile hotspots
     pingInterval: 10000,
     pingTimeout: 20000,
@@ -54,7 +66,7 @@ async function main() {
 
   httpServer.listen(port, hostname, () => {
     console.log(`> Pocket Console ready on http://localhost:${port}`);
-    if (isHostMode || true) {
+    if (isHostMode || !dev) {
       printHostBanner(port);
     }
   });

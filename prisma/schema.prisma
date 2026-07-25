@@ -6,7 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  // PostgreSQL for Railway / production. Local: use docker compose (see README).
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

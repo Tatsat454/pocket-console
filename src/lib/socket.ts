@@ -21,7 +21,8 @@ export function getSocket(): Socket {
       reconnection: true,
       reconnectionAttempts: 20,
       reconnectionDelay: 500,
-      transports: ["websocket", "polling"],
+      // polling-first works reliably behind Railway / reverse proxies
+      transports: ["polling", "websocket"],
     });
   }
   return socket;

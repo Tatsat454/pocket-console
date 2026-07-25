@@ -1,0 +1,17 @@
+# Local PostgreSQL for Pocket Console (matches Railway production).
+# Usage: docker compose up -d
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: pocket
+      POSTGRES_PASSWORD: pocket
+      POSTGRES_DB: pocket_console
+    volumes:
+      - pocket_pg:/var/lib/postgresql/data
+
+volumes:
+  pocket_pg:
