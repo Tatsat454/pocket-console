@@ -479,7 +479,6 @@ function OnlineMemory({
 
 function OnlineTrivia({
   room,
-  playerId,
   onAction,
 }: {
   room: RoomStatePayload;
@@ -522,7 +521,6 @@ function OnlineTrivia({
 
 function OnlinePlates({
   room,
-  playerId,
   onAction,
 }: {
   room: RoomStatePayload;
@@ -541,7 +539,6 @@ function OnlinePlates({
       <p className="font-display text-2xl">License Plate Hunt</p>
       <p className="mb-3 text-sm text-[var(--muted)]">
         {view.yourCount}/{view.target}
-        {playerId ? "" : ""}
       </p>
       <div className="grid max-h-96 grid-cols-2 gap-2 overflow-y-auto">
         {view.items.map((item) => (

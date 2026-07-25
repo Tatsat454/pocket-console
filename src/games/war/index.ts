@@ -103,8 +103,7 @@ export const war: GameModule<WarState, WarAction> = {
     };
 
     let warRound = false;
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    for (;;) {
       const a = draw(state.players[0], true);
       const b = draw(state.players[1], true);
       if (!a || !b) break;

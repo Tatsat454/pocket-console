@@ -2,7 +2,6 @@ import {
   createStandardDeck,
   suitSymbol,
   type PlayingCard,
-  type Rank,
   type Suit,
 } from "../cards/deck";
 import { seededRandom, shuffleInPlace } from "@/lib/ids";
@@ -142,7 +141,7 @@ export const crazyEights: GameModule<CrazyEightsState, CrazyEightsAction> = {
     let stock = [...state.stock];
     const discard = [...state.discard];
     let currentSuit = state.currentSuit;
-    let mustChooseSuit = false;
+    const mustChooseSuit = false;
     let winnerId: string | null = null;
 
     if (action.type === "draw") {

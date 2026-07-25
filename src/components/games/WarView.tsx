@@ -64,11 +64,7 @@ export function WarView({
     const pid = seats[0].id;
     const v = war.validateAction(state, action, pid);
     if (!v.ok) return;
-    let next = war.applyAction(state, action, pid);
-    // Auto-flip for AI after human flip in solo
-    if (action.type === "flip" && mode === "solo" && !next.winnerId) {
-      // war flips both in one action already
-    }
+    const next = war.applyAction(state, action, pid);
     setState(next);
   }
 
