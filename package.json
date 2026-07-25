@@ -6,24 +6,21 @@
     "dev": "tsx watch server/index.ts",
     "dev:next": "next dev",
     "host": "POCKET_HOST=1 tsx server/index.ts",
-    "build": "prisma generate && next build",
+    "build": "npm run db:generate && next build",
     "start": "NODE_ENV=production tsx server/index.ts",
     "start:prod": "prisma db push && NODE_ENV=production tsx server/index.ts",
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
     "icons": "node scripts/generate-icons.mjs",
-    "db:generate": "prisma generate",
+    "db:generate": "DATABASE_URL=\"${DATABASE_URL:-postgresql://build:build@127.0.0.1:5432/build?schema=public}\" prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "npm run db:generate"
   },
   "engines": {
     "node": ">=20"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

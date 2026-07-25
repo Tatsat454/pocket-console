@@ -60,11 +60,15 @@ This app needs a **persistent Node process** (custom server + Socket.IO), which 
 
 1. Go to [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub** → select `Tatsat454/pocket-console`.
 2. Add a database: **+ New** → **Database** → **PostgreSQL**.
-3. On the web service, open **Variables** and ensure `DATABASE_URL` is linked from Postgres (Railway usually adds this automatically when you connect the DB). Also set:
-   - `NODE_ENV=production`
+3. Link Postgres to the web service so `DATABASE_URL` is injected:
+   - Web service → **Variables** → **Add variable** → **Add reference** → pick Postgres `DATABASE_URL`
+   - Or connect the database from the service settings
+   - Set `NODE_ENV=production`
 4. In **Settings** → **Networking** → **Generate Domain**.
 5. Deploy. Health check is `/health` (configured in `railway.toml`).
 6. Optional once after first deploy: open the service shell / CLI and run `npm run db:seed`.
+
+`prisma generate` during build uses a placeholder URL if needed; **runtime still requires a real `DATABASE_URL`** from the Postgres plugin.
 
 Leave `NEXT_PUBLIC_SOCKET_URL` empty so the browser uses the same Railway origin for Socket.IO.
 
