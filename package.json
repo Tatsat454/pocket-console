@@ -3,25 +3,63 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "tsx watch server/index.ts",
+    "dev:next": "next dev",
+    "host": "POCKET_HOST=1 tsx server/index.ts",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "NODE_ENV=production tsx server/index.ts",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "icons": "node scripts/generate-icons.mjs",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "idb": "^8.0.3",
+    "nanoid": "^5.1.16",
+    "next": "15.1.0",
+    "prisma": "^6.19.3",
+    "rate-limiter-flexible": "^11.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.1.0"
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
+    "uuid": "^14.0.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^9.2.4",
     "eslint": "^9",
     "eslint-config-next": "15.1.0",
-    "@eslint/eslintrc": "^3"
+    "jsdom": "^27.0.1",
+    "postcss": "^8",
+    "sharp": "^0.35.3",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.23.1",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }

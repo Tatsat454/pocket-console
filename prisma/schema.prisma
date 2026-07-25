@@ -1,0 +1,159 @@
+// Pocket Console — Prisma schema
+// SQLite for development; switch DATABASE_URL to PostgreSQL in production.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id           String   @id @default(cuid())
+  guestId      String   @unique
+  nickname     String
+  avatarId     String   @default("traveler")
+  friendCode   String   @unique
+  xp           Int      @default(0)
+  level        Int      @default(1)
+  wins         Int      @default(0)
+  losses       Int      @default(0)
+  themeId      String   @default("console-mint")
+  cardBackId   String   @default("classic")
+  soundEnabled Boolean  @default(true)
+  vibrateEnabled Boolean @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  badges     PlayerBadge[]
+  cosmetics  PlayerCosmetic[]
+  matchesAs  MatchPlayer[]
+  favorites  FavoriteGame[]
+  recents    RecentGame[]
+  challengesSent     Challenge[] @relation("ChallengeFrom")
+  challengesReceived Challenge[] @relation("ChallengeTo")
+
+  @@index([friendCode])
+  @@index([nickname])
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  description String
+  icon        String
+  xpReward    Int      @default(25)
+  createdAt   DateTime @default(now())
+
+  players PlayerBadge[]
+}
+
+model PlayerBadge {
+  id        String   @id @default(cuid())
+  playerId  String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  badge  Badge  @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, badgeId])
+  @@index([playerId])
+}
+
+model Cosmetic {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  kind        String // card_back | theme
+  unlockXp    Int      @default(0)
+  preview     String
+  createdAt   DateTime @default(now())
+
+  owners PlayerCosmetic[]
+}
+
+model PlayerCosmetic {
+  id         String   @id @default(cuid())
+  playerId   String
+  cosmeticId String
+  unlockedAt DateTime @default(now())
+
+  player   Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  cosmetic Cosmetic @relation(fields: [cosmeticId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, cosmeticId])
+  @@index([playerId])
+}
+
+model Match {
+  id        String   @id @default(cuid())
+  gameId    String
+  mode      String // solo | same_device | private_room | local_network
+  roomCode  String?
+  endedAt   DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  players MatchPlayer[]
+
+  @@index([gameId])
+  @@index([endedAt])
+}
+
+model MatchPlayer {
+  id       String  @id @default(cuid())
+  matchId  String
+  playerId String?
+  nickname String
+  score    Int     @default(0)
+  placed   Int     @default(0)
+  won      Boolean @default(false)
+
+  match  Match   @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player? @relation(fields: [playerId], references: [id], onDelete: SetNull)
+
+  @@index([matchId])
+  @@index([playerId])
+}
+
+model Challenge {
+  id           String   @id @default(cuid())
+  fromPlayerId String
+  toPlayerId   String
+  gameId       String
+  status       String   @default("pending") // pending | accepted | declined | completed
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  fromPlayer Player @relation("ChallengeFrom", fields: [fromPlayerId], references: [id], onDelete: Cascade)
+  toPlayer   Player @relation("ChallengeTo", fields: [toPlayerId], references: [id], onDelete: Cascade)
+
+  @@index([toPlayerId, status])
+  @@index([fromPlayerId])
+}
+
+model FavoriteGame {
+  id       String   @id @default(cuid())
+  playerId String
+  gameId   String
+  createdAt DateTime @default(now())
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, gameId])
+  @@index([playerId])
+}
+
+model RecentGame {
+  id         String   @id @default(cuid())
+  playerId   String
+  gameId     String
+  playedAt   DateTime @default(now())
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@index([playerId, playedAt])
+}
