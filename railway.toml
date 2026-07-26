@@ -1,5 +1,7 @@
 [build]
 builder = "NIXPACKS"
+# Placeholder satisfies Prisma schema validation during image build.
+# Link Railway Postgres so the real DATABASE_URL is present at runtime.
 buildCommand = "npm run build"
 
 [deploy]
